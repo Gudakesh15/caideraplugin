@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Caidera Copilot</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header class="header">
+        <h1>Caidera Copilot</h1>
+        <p>First-pass compliance check for selected text</p>
+      </header>
+
+      <section id="statusBanner" class="banner info">Select text on the page, then run a check.</section>
+
+      <section class="selection">
+        <h2>Selected Text</h2>
+        <p id="selectedText" class="selected-text">No text selected yet.</p>
+      </section>
+
+      <section class="actions">
+        <button id="checkBtn" class="primary-btn" disabled>Check Compliance</button>
+        <button id="refreshBtn" class="ghost-btn" type="button">Refresh Selection</button>
+      </section>
+
+      <section id="loadingState" class="loading hidden" aria-live="polite">
+        <div class="spinner"></div>
+        <span>Analyzing compliance risk...</span>
+      </section>
+
+      <section id="results" class="results hidden">
+        <article class="risk-panel">
+          <div class="risk-label">Overall Risk</div>
+          <div id="overallRisk" class="risk-value">-</div>
+        </article>
+
+        <section>
+          <h2>Flags</h2>
+          <div id="flagsList" class="flags-list"></div>
+        </section>
+
+        <section class="bottom-notes">
+          <article class="summary-card">
+            <h3>Summary</h3>
+            <p id="summaryText">-</p>
+          </article>
+          <article class="cta-card">
+            <h3>CTA</h3>
+            <p id="ctaText">-</p>
+          </article>
+        </section>
+      </section>
+    </main>
+
+    <script src="popup.js"></script>
+  </body>
+</html>

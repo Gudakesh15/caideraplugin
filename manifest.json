@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "Caidera Copilot",
+  "version": "1.0.0",
+  "description": "First-pass compliance review for marketing and medical-style claims.",
+  "permissions": ["activeTab"],
+  "host_permissions": ["https://aviral15.app.n8n.cloud/*"],
+  "action": {
+    "default_title": "Caidera Copilot",
+    "default_popup": "popup.html"
+  },
+  "content_security_policy": {
+    "extension_pages": "default-src 'self'; script-src 'self'; object-src 'self'; connect-src 'self' https://aviral15.app.n8n.cloud"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

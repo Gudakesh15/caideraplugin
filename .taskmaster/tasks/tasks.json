@@ -1,0 +1,184 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": "1",
+        "title": "Create Manifest V3 Configuration",
+        "description": "Set up the manifest.json file with proper MV3 configuration, permissions, and file declarations",
+        "details": "Create manifest.json with version 3, declare popup.html, content.js, specify activeTab permission and host permissions for webhook endpoint. Include name, version, description fields. Structure: { \"manifest_version\": 3, \"name\": \"Caidera Copilot\", \"version\": \"1.0\", \"description\": \"Compliance review for marketing claims\", \"permissions\": [\"activeTab\"], \"host_permissions\": [\"https://*/*\"], \"action\": { \"default_popup\": \"popup.html\" }, \"content_scripts\": [{ \"matches\": [\"<all_urls>\"], \"js\": [\"content.js\"] }] }",
+        "testStrategy": "Validate manifest.json syntax, test extension loading in Chrome developer mode, verify permissions are granted correctly",
+        "priority": "high",
+        "dependencies": [],
+        "status": "done",
+        "subtasks": [],
+        "updatedAt": "2026-03-26T16:11:40.991Z"
+      },
+      {
+        "id": "2",
+        "title": "Implement Content Script for Text Selection",
+        "description": "Create content.js to capture selected text from any webpage and handle messaging with popup",
+        "details": "Implement content.js with: 1) Function to get selected text using window.getSelection().toString().trim() 2) Message listener for chrome.runtime.onMessage 3) Safe handling of empty selections 4) Cross-frame selection support. Code structure: chrome.runtime.onMessage.addListener((request, sender, sendResponse) => { if (request.action === 'getSelectedText') { const selectedText = window.getSelection().toString().trim(); sendResponse({ text: selectedText || '' }); } return true; });",
+        "testStrategy": "Test text selection on various websites, verify empty selection handling, test messaging between content script and popup",
+        "priority": "high",
+        "dependencies": [
+          "1"
+        ],
+        "status": "done",
+        "subtasks": [],
+        "updatedAt": "2026-03-26T16:12:17.799Z"
+      },
+      {
+        "id": "3",
+        "title": "Create Basic Popup HTML Structure",
+        "description": "Build popup.html with semantic structure for all UI states and components",
+        "details": "Create popup.html with: 1) DOCTYPE html5 2) Head with meta charset, viewport, title, CSS link 3) Body structure with containers for: empty state, ready state, loading state, results state, error state 4) Elements: header, selected text display, check button, results container, flags container, summary section 5) Include popup.js script tag. Use semantic HTML with proper ARIA labels for accessibility.",
+        "testStrategy": "Validate HTML syntax, test popup opening in extension, verify all containers and elements are present",
+        "priority": "medium",
+        "dependencies": [
+          "1"
+        ],
+        "status": "done",
+        "subtasks": [],
+        "updatedAt": "2026-03-26T16:12:17.801Z"
+      },
+      {
+        "id": "4",
+        "title": "Design and Implement Popup CSS Styling",
+        "description": "Create modern, polished CSS styling for the popup with responsive design and visual hierarchy",
+        "details": "Create popup.css with: 1) Reset and base styles 2) Popup dimensions (min-width: 400px, max-height: 600px) 3) Typography hierarchy 4) Color-coded severity badges (Low=green, Medium=amber, High=red) 5) Card layouts for flags 6) Loading states with subtle animations 7) Button styles and hover states 8) Error state styling 9) Responsive design for different content lengths. Use modern CSS features like flexbox, CSS custom properties for theming.",
+        "testStrategy": "Test visual appearance across different states, verify responsive behavior, test color contrast for accessibility, validate CSS syntax",
+        "priority": "medium",
+        "dependencies": [
+          "3"
+        ],
+        "status": "done",
+        "subtasks": [],
+        "updatedAt": "2026-03-26T16:12:17.803Z"
+      },
+      {
+        "id": "5",
+        "title": "Implement Core Popup JavaScript Logic",
+        "description": "Create popup.js with state management, messaging, and UI control logic",
+        "details": "Implement popup.js with: 1) Constants for webhook endpoint 2) State management (idle, ready, loading, success, error) 3) DOM element references 4) Function to request selected text from active tab using chrome.tabs.query and chrome.tabs.sendMessage 5) UI state switching functions 6) Event listeners for check button 7) Error handling utilities 8) Text length validation (max 5000 chars). Structure with async/await pattern and proper error boundaries.",
+        "testStrategy": "Test state transitions, verify messaging with content script, test button interactions, validate error handling",
+        "priority": "high",
+        "dependencies": [
+          "2",
+          "3"
+        ],
+        "status": "done",
+        "subtasks": [],
+        "updatedAt": "2026-03-26T16:12:17.806Z"
+      },
+      {
+        "id": "6",
+        "title": "Implement Webhook Integration",
+        "description": "Add HTTP request functionality to send selected text to n8n webhook and handle responses",
+        "details": "Extend popup.js with: 1) Async function to POST to webhook with fetch API 2) Request headers: Content-Type: application/json 3) Request body: JSON.stringify({ text: selectedText }) 4) Response parsing and validation 5) Timeout handling (10 second timeout) 6) Network error handling 7) CORS handling if needed 8) Response schema validation to ensure required fields exist. Use try-catch blocks and proper error propagation.",
+        "testStrategy": "Test successful webhook calls, test network error scenarios, test timeout handling, test malformed response handling, verify request format matches specification",
+        "priority": "high",
+        "dependencies": [
+          "5"
+        ],
+        "status": "done",
+        "subtasks": [],
+        "updatedAt": "2026-03-26T16:12:17.807Z"
+      },
+      {
+        "id": "7",
+        "title": "Implement Results Rendering System",
+        "description": "Create dynamic UI rendering for compliance analysis results with proper data handling",
+        "details": "Implement results rendering in popup.js: 1) Function to render overall risk with appropriate styling 2) Function to create flag cards dynamically with phrase, severity badge, risk type, reason, suggested rewrite 3) Function to render summary and CTA sections 4) Graceful degradation for missing fields (show '—' or hide sections) 5) HTML sanitization for user content 6) Scroll handling for many flags 7) Clear previous results before rendering new ones. Use template literals and DOM manipulation.",
+        "testStrategy": "Test rendering with complete data, test with missing fields, test with many flags, test HTML sanitization, verify visual hierarchy",
+        "priority": "high",
+        "dependencies": [
+          "4",
+          "6"
+        ],
+        "status": "done",
+        "subtasks": [],
+        "updatedAt": "2026-03-26T16:12:17.809Z"
+      },
+      {
+        "id": "8",
+        "title": "Implement State Management and UI Transitions",
+        "description": "Add comprehensive state handling for empty selection, loading, success, and error states",
+        "details": "Enhance popup.js with: 1) showEmptyState() - display helpful prompt when no text selected 2) showReadyState() - show selected text preview and enabled button 3) showLoadingState() - disable button, show spinner, maintain UI stability 4) showSuccessState() - display results 5) showErrorState() - show error message with retry option 6) State transition validation 7) UI element visibility management 8) Loading indicators and animations. Ensure smooth transitions between states.",
+        "testStrategy": "Test all state transitions, verify UI stability during loading, test retry functionality, validate empty state messaging",
+        "priority": "medium",
+        "dependencies": [
+          "7"
+        ],
+        "status": "done",
+        "subtasks": [],
+        "updatedAt": "2026-03-26T16:12:17.811Z"
+      },
+      {
+        "id": "9",
+        "title": "Add Copy-to-Clipboard Functionality",
+        "description": "Implement copy buttons for suggested rewrites with user feedback",
+        "details": "Add copy functionality: 1) Copy buttons for each suggested rewrite 2) Use navigator.clipboard.writeText() API 3) Visual feedback on successful copy (button text change or checkmark) 4) Fallback for older browsers using document.execCommand 5) Error handling for copy failures 6) Temporary success state indication 7) Proper button styling and positioning. Include clipboard permission in manifest if needed.",
+        "testStrategy": "Test copy functionality across browsers, test fallback methods, verify user feedback, test permission handling",
+        "priority": "low",
+        "dependencies": [
+          "7"
+        ],
+        "status": "done",
+        "subtasks": [],
+        "updatedAt": "2026-03-26T16:12:17.813Z"
+      },
+      {
+        "id": "10",
+        "title": "Implement Error Handling and Edge Cases",
+        "description": "Add comprehensive error handling for network issues, malformed data, and edge cases",
+        "details": "Enhance error handling: 1) Network connectivity errors 2) DNS resolution failures 3) HTTP status code handling (4xx, 5xx) 4) JSON parsing errors 5) Schema validation errors 6) Extremely long text handling (truncation warning) 7) Empty response handling 8) Timeout scenarios 9) Rate limiting responses 10) User-friendly error messages with actionable guidance. Implement retry mechanisms where appropriate.",
+        "testStrategy": "Test offline scenarios, test with invalid JSON responses, test with missing required fields, test with oversized text, test timeout scenarios",
+        "priority": "medium",
+        "dependencies": [
+          "8"
+        ],
+        "status": "done",
+        "subtasks": [],
+        "updatedAt": "2026-03-26T16:12:17.814Z"
+      },
+      {
+        "id": "11",
+        "title": "Add Input Validation and Security Measures",
+        "description": "Implement input validation, sanitization, and basic security measures",
+        "details": "Add security measures: 1) Input length validation (max 5000 characters) 2) HTML sanitization for all user-generated content 3) XSS prevention in dynamic content rendering 4) URL validation for webhook endpoint 5) Content Security Policy headers 6) Input trimming and normalization 7) Prevent injection attacks in rendered content 8) Validate response data types and structure. Use DOMPurify or similar for sanitization.",
+        "testStrategy": "Test with malicious input, test XSS prevention, test input length limits, verify sanitization of rendered content, test CSP enforcement",
+        "priority": "medium",
+        "dependencies": [
+          "10"
+        ],
+        "status": "done",
+        "subtasks": [],
+        "updatedAt": "2026-03-26T16:12:46.652Z"
+      },
+      {
+        "id": "12",
+        "title": "Final Integration Testing and Polish",
+        "description": "Conduct end-to-end testing, performance optimization, and final UI polish",
+        "details": "Final testing and polish: 1) End-to-end user flow testing 2) Cross-browser compatibility testing 3) Performance optimization (minimize bundle size, optimize CSS) 4) Accessibility testing and ARIA improvements 5) UI polish and micro-interactions 6) Loading performance optimization 7) Memory leak testing 8) Extension packaging and validation 9) Documentation and README creation 10) Final code review and cleanup.",
+        "testStrategy": "Complete user journey testing, automated testing where possible, performance benchmarking, accessibility audit, cross-browser testing, extension store validation",
+        "priority": "medium",
+        "dependencies": [
+          "9",
+          "11"
+        ],
+        "status": "in-progress",
+        "subtasks": [],
+        "updatedAt": "2026-03-26T16:13:14.349Z"
+      }
+    ],
+    "metadata": {
+      "version": "1.0.0",
+      "lastModified": "2026-03-26T16:13:14.349Z",
+      "taskCount": 12,
+      "completedCount": 11,
+      "tags": [
+        "master"
+      ]
+    }
+  }
+}
